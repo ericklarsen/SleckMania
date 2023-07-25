@@ -1,0 +1,9 @@
+ 
+package-lock.json
+.next/
+node_modules/
+__mocks__/
+etc/
+.ebextentions/
+public/
+coverage/

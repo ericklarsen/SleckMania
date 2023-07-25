@@ -1,0 +1,1 @@
+concurrently -k \"npx tsc --watch\" \"nodemon -q -L index.js\"

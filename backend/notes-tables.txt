@@ -1,0 +1,205 @@
+    1. Use this code below to create tables on knex.js in docker container.
+    docker exec sleck-api sh -c "npx knex migrate:latest"
+
+    2. Use this code below to drop tables on knex.js in docker container.
+    docker exec sleck-api sh -c "npx knex migrate:down"
+
+    3. Use this code below if you want to create all of your tables again before running migrate:latest
+    docker exec chatapp-api sh -c "npx knex migrate:rollback --all && npx knex migrate:latest"
+
+    4. jump to postgresql terminal
+    docker exec -it sleck-db psql -U postgres sleck
+
+    5. Use this code to set testing data.
+    docker exec sleck-api sh -c "npx knex seed:run"
+
+
+    ----- TABLES -------
+
+    users will have 2 kind of permissions :
+    - 0: not validated
+    - 1: normal user
+    - 2: super user, this user can be an admin from this app, this user can have access to the dashboard from this app.
+
+    1. Users
+    - uid
+    - username
+    - email
+    - password
+    - first_name
+    - last_name
+    - phone_number
+    - permission_state // 0 = not validated, 1 = normal user, 2 = super user
+
+    2. Users Company 
+    - uid
+    - user_uid
+    - company_uid
+
+    3. Companies
+    - uid
+    - company_name
+    - company_logo
+
+    members will have 3 kind of permissions : 
+    - 1: normal member
+    - 2: admin member - this user is the admin of the company, this user can create channels and rooms.
+    - 3: super member = this user is the owner of the company, this user can create channels and rooms, add and remove new members, change company details like logo and name.
+
+    users can only have 1 company;
+
+    3.1 Company Members
+    - uid
+    - company_uid
+    - user_uid
+    - permission_state // 1: normal member, 2: admin member, 3: super member
+
+    4. Channel
+    - uid
+    - channel_name
+    - channel_logo
+    - channel_description
+    
+    5. Channel Members
+    - uid
+    - channel_uid
+    - user_uid
+---------------------------------------------------------
+    
+    6. Rooms
+    - uid
+    - room_name
+    - room_description 
+
+    7. Channel Rooms
+    - uid
+    - channel_uid
+    - room_uid
+
+    8. Threads
+    - uid
+    - thread_title
+    - thread_content
+    - user_uid
+
+    9. Channel Threads
+    - uid
+    - channel_uid
+    - thread_uid
+
+    10. Comments
+    - uid
+    - comment_content
+    - user_uid
+    - is_edited
+
+    11. Thread Comments
+    - uid
+    - thread_uid
+    - comment_uid
+
+    12. Messages
+    - uid
+    - user_uid
+    - message_content
+
+    13. Room Messages
+    - uid
+    - room_uidZZ
+
+
+SELECT channels.channel_name AS channel_name, GROUP_CONCAT(CHAN_ROOM.room_uid) AS RoomUid FROM channels AS CHANNELS INNER JOIN channel_rooms CHAN_ROOM ON CHANNELS.uid = CHAN_ROOM.channel_uid GROUP BY channel_name;
+
+/// --------------------------------------------------------------------------
+Apologies for the confusion. It appears that the `GROUP_CONCAT` function is not available in all database systems, including some versions of PostgreSQL. If you're using a database system that doesn't support `GROUP_CONCAT`, you can achieve a similar result using a combination of `GROUP BY` and a subquery.
+
+Here's an updated example that uses a subquery to retrieve the orders as an array within each user object:
+
+```javascript
+const knex = require('knex')(knexConfig); // Replace knexConfig with your actual Knex configuration
+
+async function rightJoinOneToManyToArray() {
+  const result = await knex
+    .select('users.id', 'users.name', knex.raw('array_agg(orders.order_number) AS order_numbers'))
+    .from('users')
+    .rightJoin('orders', 'users.id', 'orders.user_id')
+    .groupBy('users.id', 'users.name');
+
+  const joinedDataArray = result.map(row => ({
+    id: row.id,
+    name: row.name,
+    orderNumbers: row.order_numbers || []
+  }));
+
+  console.log(joinedDataArray);
+}
+
+rightJoinOneToManyToArray();
+```
+
+In the updated example:
+
+1. We use `knex.raw()` to include `array_agg(orders.order_number) AS order_numbers` in the column selection. The `array_agg` function aggregates the `order_number` values into an array.
+
+2. The `GROUP BY` clause includes `users.id` and `users.name` to group the results by these columns.
+
+3. In the `joinedDataArray`, we check if `row.order_numbers` is `null` or `undefined` and replace it with an empty array if necessary.
+
+By using the `array_agg` function and modifying the column selection and grouping, you should be able to retrieve the result with the orders as an array within each user object, even if the `GROUP_CONCAT` function is not available in your database system.
+/// --------------------------------------------------------------------------
+
+No, the `STRING_AGG` function in PostgreSQL allows you to concatenate values from a single column into a string. It does not directly support aggregating multiple properties or columns into a single string.
+
+However, you can concatenate multiple columns or properties into a JSON string using the `json_build_object` and `json_agg` functions. Here's an example:
+
+```javascript
+const knex = require('knex')(knexConfig); // Replace knexConfig with your actual Knex configuration
+
+async function rightJoinOneToManyToArray() {
+  const result = await knex
+    .select('users.id', 'users.name', knex.raw("json_agg(json_build_object('order_number', orders.order_number, 'other_property', orders.other_property)) AS orders"))
+    .from('users')
+    .rightJoin('orders', 'users.id', 'orders.user_id')
+    .groupBy('users.id', 'users.name');
+
+  console.log(result);
+}
+
+rightJoinOneToManyToArray();
+```
+
+In this example, we're using `json_build_object` to construct a JSON object with the desired properties (`order_number`, `other_property`, etc.). Then, we use `json_agg` to aggregate the JSON objects into an array.
+
+The resulting `result` object will contain the `id`, `name`, and `orders` properties. The `orders` property will be an array of JSON objects, where each object contains the desired properties from the `orders` table.
+
+Please note that this approach requires the `jsonb` data type support in PostgreSQL, which is available starting from PostgreSQL 9.4. If you're using an older version of PostgreSQL, you may need to adapt the solution accordingly.
+
+/// ------------------------
+
+Apologies for the oversight. The error message suggests that there might be an issue with the equality operator for the `json` data type in PostgreSQL. 
+
+To resolve this, you can try casting the `json_build_object` result to `jsonb` data type instead. The `jsonb` data type has better support for equality operators. Here's an updated example:
+
+```javascript
+const knex = require('knex')(knexConfig); // Replace knexConfig with your actual Knex configuration
+
+async function rightJoinOneToManyToArray() {
+  const result = await knex
+    .select('users.id', 'users.name', knex.raw("json_agg(DISTINCT json_build_object('order_number', orders.order_number, 'other_property', orders.other_property)::jsonb) AS orders"))
+    .from('users')
+    .rightJoin('orders', 'users.id', 'orders.user_id')
+    .groupBy('users.id', 'users.name');
+
+  console.log(result);
+}
+
+rightJoinOneToManyToArray();
+```
+
+In this updated example, we're using `::jsonb` to cast the result of `json_build_object` to the `jsonb` data type.
+
+By casting to `jsonb`, it should resolve the error related to the equality operator for the `json` data type. The resulting JSON array in the `orders` property will contain distinct objects based on the provided properties.
+
+Please note that if you're using a PostgreSQL version older than 9.4, you may need to adjust the approach accordingly.
+
+//--------------

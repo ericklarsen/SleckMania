@@ -1,0 +1,40 @@
+.chatBox {
+    @apply w-full flex gap-2 mb-4;
+}
+
+.chatBox__name {
+    @apply font-normal;
+}
+
+.chatBox__ava {
+    @apply w-[48px] h-[48px] bg-[#6A6A6A] rounded-full;
+}
+
+.chatBox__message {
+    @apply p-3 pb-9 pr-10 bg-[#333333] w-fit mt-1.5 relative;
+}
+
+.chatBox__message p {
+    @apply font-light w-full;
+}
+
+.chatBox__message .chatBox__message_date {
+    @apply font-normal absolute bottom-2 right-3 opacity-50;
+}
+
+.chatBox.is_me {
+    @apply flex-row-reverse justify-start;
+}
+
+.chatBox.is_me .chatBox__ava,
+.chatBox.is_me .chatBox__name {
+    @apply hidden;
+}
+
+.chatBox.is_me .chatBox__message {
+    @apply p-3 pb-9 pl-10;
+}
+
+/* .chatBox__message .chatBox__message_date {
+    @apply right-[unset] left-3;
+} */

@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+    api:
+        container_name: sleck-api
+        restart: always
+        build: .
+        ports:
+            - ${PORT}:${PORT}
+        depends_on:
+            - db
+        volumes:
+            # "." means current directory.
+            # mount current dir into docker container
+            - .:/usr/app
+            # ignore local node_modules, use container
+            - /usr/app/node_modules
+        networks:
+            - sleck-infra
+    db:
+        container_name: sleck-db
+        image: postgres
+        ports:
+            - "5433:${DB_PORT}"
+        volumes:
+            - sleck-data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_NAME}
+        networks:
+            - sleck-infra
+    pgadmin:
+        container_name: slect-pgadmin
+        image: dpage/pgadmin4
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "ericklarsenn@gmail.com"
+            PGADMIN_DEFAULT_PASSWORD: "test123"
+        ports:
+            - "5022:80"
+        volumes:
+            - sleck-pgadmin-data:/var/lib/pgadmin
+        networks:
+            - sleck-infra
+networks:
+    sleck-infra:
+        external:
+            name: slecknet
+volumes:
+    sleck-data:
+    sleck-pgadmin-data:

@@ -1,0 +1,7 @@
+.roomBox {
+    @apply w-full mb-4 cursor-pointer bg-[#252525] opacity-50;
+}
+
+.roomBox.activated {
+    @apply opacity-100;
+}

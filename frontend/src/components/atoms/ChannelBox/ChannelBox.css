@@ -1,0 +1,19 @@
+.channelBox {
+    @apply mb-8 w-[60px] cursor-pointer;
+}
+
+.channelBox.activated .channelBox__ava {
+    border: 2px solid white;
+}
+
+.channelBox.activated .channelBox__text {
+    @apply opacity-100;
+}
+
+.channelBox__ava {
+    @apply w-[40px] h-[40px] mx-auto bg-[#404040] rounded-full mb-2 flex items-center justify-center;
+}
+
+.channelBox__text {
+    @apply w-full break-words opacity-50 font-light text-center;
+}

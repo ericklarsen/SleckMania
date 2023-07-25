@@ -1,0 +1,52 @@
+@use "sass:map";
+@use "@carbon/react/scss/compat/themes" as compat;
+@use "@carbon/react/scss/themes";
+@use "@carbon/react/scss/theme" with (
+    $fallback: compat.$g100,
+    $theme: themes.$g100
+);
+@use "@carbon/react";
+@import "@carbon/type/scss/font-family";
+
+:root {
+    @include theme.theme();
+}
+
+body * {
+    font-family: map.get($font-families, "sans");
+    color: white;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 500;
+}
+
+* {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #888;
+    border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #414141;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
