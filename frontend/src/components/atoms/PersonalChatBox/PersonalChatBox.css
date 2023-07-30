@@ -1,0 +1,11 @@
+.personalChatBox {
+    @apply w-full p-4 grid grid-cols-[36px_1fr] gap-3 cursor-pointer;
+}
+
+.personalChatBox.active {
+    @apply bg-[#2a2a2a];
+}
+
+.personalChatBox__details {
+    @apply flex-1 overflow-x-hidden;
+}

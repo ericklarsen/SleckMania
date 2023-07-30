@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiRequest } from "@/services/apiRequest";
 import { RootState } from "../../store";
+import { ChannelsObj } from "./getAll";
 
 // here we are typing the types for the state
 type InitialState = {
@@ -15,17 +16,6 @@ type ChannelRooms = {
     room_name?: string;
 };
 
-export type ChannelsObj = {
-    uid: number;
-    channel_logo?: string;
-    channel_name?: string;
-    channel_description?: string;
-    join?: boolean;
-    created_at?: string;
-    updated_at?: string;
-    rooms?: ChannelRooms[];
-};
-
 const initialState: InitialState = {
     data: [],
     loading: false,
@@ -34,13 +24,13 @@ const initialState: InitialState = {
 };
 
 // This action is what we will call using the dispatch in order to trigger the API call.
-export const getAllChannels = createAsyncThunk("channels/getAll", async () => {
-    const response = await apiRequest({ method: "GET", url: "channels/getAllChannel" });
+export const getMyChannels = createAsyncThunk("channels/getMy", async () => {
+    const response = await apiRequest({ method: "GET", url: "channels/getMyChannel" });
     return response.data.data;
 });
 
-export const channelsSlice = createSlice({
-    name: "channels",
+export const myChannelsSlice = createSlice({
+    name: "myChannels",
     initialState,
     reducers: {
         // leave this empty here
@@ -50,21 +40,21 @@ export const channelsSlice = createSlice({
     // Doing this is good practice as we can tap into the status of the API call and give our users an idea of what's happening in the background.
     extraReducers: (builder) => {
         builder
-            .addCase(getAllChannels.pending, (state) => {
+            .addCase(getMyChannels.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getAllChannels.fulfilled, (state, { payload }) => {
+            .addCase(getMyChannels.fulfilled, (state, { payload }) => {
                 // When the API call is successful and we get some data,the data becomes the `fulfilled` action payload
                 state.loading = false;
                 state.data = payload;
             })
-            .addCase(getAllChannels.rejected, (state) => {
+            .addCase(getMyChannels.rejected, (state) => {
                 state.loading = false;
                 state.error = true;
             });
     },
 });
 
-export const selectChannels = (state: RootState) => state.channels;
+export const selectMyChannels = (state: RootState) => state.myChannels;
 
-export default channelsSlice.reducer;
+export default myChannelsSlice.reducer;

@@ -1,0 +1,7 @@
+.homePage__topNav {
+    @apply w-full flex items-center justify-between px-4 pt-7 pb-4 flex-[0_auto];
+}
+
+.homePage__bottomNav {
+    @apply w-full max-h-full overflow-y-auto overflow-x-hidden flex-[1_auto];
+}

@@ -13,7 +13,6 @@ const verifyMyCompanyChannelAndDoIHaveTheAccess = async (req, res, next) => {
         .andWhere("channels.uid", channel_uid)
         .andWhere("channel_members.user_uid", user_uid)
         .then((data) => {
-            console.log(data);
             if (!data.length) {
                 return res
                     .status(200)
@@ -23,6 +22,7 @@ const verifyMyCompanyChannelAndDoIHaveTheAccess = async (req, res, next) => {
             next();
         })
         .catch((err) => {
+            console.log(err);
             res.status(200).send(responseTemplate("error", err.detail));
         });
 };

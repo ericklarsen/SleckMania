@@ -4,6 +4,7 @@ import loaderReducer from "./slices/loader/loader";
 import globalsReducer from "./slices/globals/globals";
 
 import channelsReducer from "./slices/channels/getAll";
+import myChannelsReducer from "./slices/channels/getMy";
 import roomsReducer from "./slices/rooms/getAll";
 import messagesReducer from "./slices/messages/messages";
 
@@ -12,6 +13,7 @@ export const store = configureStore({
         globals: globalsReducer,
         loader: loaderReducer,
         channels: channelsReducer,
+        myChannels: myChannelsReducer,
         rooms: roomsReducer,
         messages: messagesReducer,
     },

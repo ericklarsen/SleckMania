@@ -14,7 +14,7 @@
 
 body * {
     font-family: map.get($font-families, "sans");
-    color: white;
+    // color: white;
 }
 
 h1,
@@ -25,7 +25,7 @@ h4 {
 }
 
 * {
-    scroll-behavior: smooth;
+    // scroll-behavior: smooth;
     scroll-snap-type: y mandatory;
 }
 

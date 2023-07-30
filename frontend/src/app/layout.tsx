@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Loader } from "@/components/atoms/Loader/Loader";
 import { Providers } from "./stores/provider";
+import { MainLayout } from "@/components/layouts/MainLayout/MainLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
             <body className={inter.className}>
                 {/* <Loader /> */}
-                <Providers>{children}</Providers>
+                <MainLayout>
+                    <Providers>{children}</Providers>
+                </MainLayout>
             </body>
         </html>
     );

@@ -8,9 +8,9 @@ const { v4: uuidv4 } = require("uuid");
 exports.getAllChannel = async (req, res) => {
     db.select(
         "channels.*",
-        // db.raw(
-        //     "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('room_uid', channel_rooms.room_uid, 'room_name', rooms.room_name)::jsonb), '[]') ELSE '[]' END AS rooms"
-        // )
+        db.raw(
+            "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('room_uid', channel_rooms.room_uid, 'room_name', rooms.room_name)::jsonb), '[]') ELSE '[]' END AS rooms"
+        ),
         db.raw(
             "CASE WHEN COUNT(channel_members.user_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('user_uid', channel_members.user_uid, 'first_name', users.first_name, 'last_name', users.last_name)::jsonb), '[]') ELSE '[]' END AS members"
         )
@@ -18,7 +18,7 @@ exports.getAllChannel = async (req, res) => {
         .from("channels")
         .leftJoin("channel_rooms", "channels.uid", "channel_rooms.channel_uid")
         .leftJoin("channel_members", "channels.uid", "channel_members.channel_uid")
-        // .leftJoin("rooms", "rooms.uid", "channel_rooms.room_uid")
+        .leftJoin("rooms", "rooms.uid", "channel_rooms.room_uid")
         .leftJoin("users", "users.uid", "channel_members.user_uid")
         .leftJoin("company_channels", "company_channels.channel_uid", "channels.uid")
         .groupBy("channels.uid")
@@ -44,10 +44,10 @@ exports.getAllChannel = async (req, res) => {
 
 exports.getMyChannel = async (req, res) => {
     db.select(
-        "channels.*"
-        // db.raw(
-        //     "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('room_uid', channel_rooms.room_uid, 'room_name', rooms.room_name)::jsonb), '[]') ELSE '[]' END AS rooms"
-        // )
+        "channels.*",
+        db.raw(
+            "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('room_uid', channel_rooms.room_uid, 'room_name', rooms.room_name)::jsonb), '[]') ELSE '[]' END AS rooms"
+        )
         // db.raw(
         //     "CASE WHEN COUNT(channel_members.user_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('user_uid', channel_members.user_uid, 'first_name', users.first_name, 'last_name', users.last_name)::jsonb), '[]') ELSE '[]' END AS members"
         // )

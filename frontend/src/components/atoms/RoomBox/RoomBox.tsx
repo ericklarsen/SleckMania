@@ -19,10 +19,6 @@ export const RoomBox: React.FC<Props> = ({ data }) => {
         SocketIO.emit(JOIN_ROOM, obj.uid);
     };
 
-    useEffect(() => {
-        console.log(currentRoom);
-    }, [currentRoom]);
-
     return (
         <div
             className={`roomBox ${currentRoom.uid === data.uid ? "activated" : ""}`}
@@ -32,6 +28,7 @@ export const RoomBox: React.FC<Props> = ({ data }) => {
                 <div className="w-[48px] h-auto bg-[#6A6A6A]">
                     {data.room_logo ? (
                         <img
+                            className="w-full h-full object-cover"
                             alt="room logo"
                             src={`${process.env.NEXT_PUBLIC_ASSET_SERVER}/rooms/${data.room_logo}`}
                         />

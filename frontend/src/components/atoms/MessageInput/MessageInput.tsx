@@ -44,8 +44,12 @@ export const MessageInput: React.FC = () => {
     };
 
     const generateTypingList = () => {
-        if (!listUsersTyping.length) return;
-        let users = listUsersTyping.map((item: any) => item.first_name);
+        const fixData = listUsersTyping.filter((fil: any) => fil.uid !== appUser.uid);
+        if (!fixData.length) return;
+
+        let users = fixData.map((item: any) => {
+            return item.first_name;
+        });
         return (
             <div className="w-full p-4 py-2 bg-[#3f3f3f]">
                 <h6 className="font-normal opacity-75 italic">{users.toString()} typing...</h6>

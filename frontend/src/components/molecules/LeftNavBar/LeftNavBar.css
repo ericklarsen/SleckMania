@@ -1,0 +1,7 @@
+.leftNavBar__icon {
+    @apply w-5 h-5 cursor-pointer opacity-50;
+}
+
+.leftNavBar__icon.active {
+    @apply opacity-100;
+}

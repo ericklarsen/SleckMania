@@ -3,11 +3,30 @@ import { getAllRooms, selectRooms } from "@/app/stores/slices/rooms/getAll";
 import { RoomBox } from "@/components/atoms/RoomBox/RoomBox";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton, Loading, Modal, TextInput, FileUploader } from "@carbon/react";
+import {
+    IconButton,
+    Loading,
+    Modal,
+    TextInput,
+    FileUploader,
+    InlineNotification,
+} from "@carbon/react";
 import { Add } from "@carbon/icons-react";
-import { getAccessToken } from "@/services/apiRequest";
+import { apiRequest, getAccessToken } from "@/services/apiRequest";
 import { SocketIO } from "@/services/socket";
 import { setMessages } from "@/app/stores/slices/messages/messages";
+
+type ParamGetAllInputValueFunc = {
+    callback?: (el: HTMLInputElement) => void;
+    enableValidation?: boolean;
+};
+type ObjType = {
+    channel_uid: number;
+    room_name: string;
+    room_description: string;
+    room_logo?: any | string;
+};
+type NameType = "room_logo" | "room_name" | "room_description";
 
 export const HomePageRooms: React.FC = () => {
     const dispatch = useDispatch();
@@ -16,73 +35,76 @@ export const HomePageRooms: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false as boolean);
     const [isDataValid, setIsDataValid] = useState(false as boolean);
 
-    type ParamGetAllInputValueFunc = {
-        callback?: (el: HTMLInputElement) => void;
-        isReturn?: boolean;
-    };
-    const getAllInputValue = ({ callback, isReturn }: ParamGetAllInputValueFunc) => {
-        type ObjType = {
-            room_name: string;
-            room_description: string;
-            room_logo?: any | string;
-        };
+    const getAllInputValue = ({ callback, enableValidation }: ParamGetAllInputValueFunc) => {
         const obj: ObjType = {
+            channel_uid: currentChannel.uid,
             room_name: "",
             room_description: "",
             room_logo: "",
         };
+        let isNotValid = 0;
         document.querySelectorAll("[data-name]").forEach((el) => {
             const targetEl = el as HTMLInputElement;
 
             if (callback) {
                 callback(targetEl);
             } else {
-                type NameType = "room_logo" | "room_name" | "room_description";
                 const name = targetEl.dataset.name as NameType;
 
                 if (name === "room_logo") {
+                    if (targetEl.tagName === "SPAN") return;
                     const fileInput = targetEl.querySelector("input") as HTMLInputElement;
-                    console.log(name);
-                    console.log(fileInput);
-                    obj[name] = fileInput?.files;
+                    const files = fileInput.files as any;
+                    obj[name] = files[0];
+
+                    if (enableValidation) {
+                        if (!fileInput.files?.length) {
+                            isNotValid++;
+                        }
+                    }
                 } else {
                     obj[name] = targetEl.value;
+
+                    if (enableValidation) {
+                        if (!targetEl.value) isNotValid++;
+                    }
                 }
             }
         });
 
-        if (isReturn) return obj;
-    };
-
-    const handleValidation = () => {
-        let isNotValid = 0;
-
-        getAllInputValue({
-            callback: (targetEl) => {
-                const name = targetEl.dataset.name as string;
-                if (name === "room_logo") {
-                    // const fileInput = targetEl.querySelector("input") as HTMLInputElement;
-                    // console.log(fileInput.value);
-                    // if (!fileInput.files) {
-                    //     isNotValid++;
-                    // }
-                } else {
-                    if (!targetEl.value) isNotValid++;
-                }
-            },
-        });
-
+        if (!enableValidation) return obj;
         setIsDataValid(isNotValid ? false : true);
     };
 
-    const handleSubmit = () => {
-        const payload = getAllInputValue({ isReturn: true });
-        console.log(payload);
+    const handleSubmit = async () => {
+        const payload = getAllInputValue({ enableValidation: false }) as ObjType;
+        const form = new FormData();
+
+        Object.keys(payload).forEach((key) => {
+            var name = key as NameType;
+            form.append(key, payload[name]);
+        });
+
+        apiRequest({
+            method: "POST",
+            headers: { "Content-Type": "multipart/form-data" },
+            url: "rooms/add",
+            data: form,
+        })
+            .then((res) => {
+                if (!res.status) return;
+                console.log(res);
+                setIsModalOpen(false);
+                dispatch(getAllRooms(currentChannel.uid) as any);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     useEffect(() => {
         if (currentChannel.uid) {
-            dispatch(getAllRooms(currentChannel.uid));
+            dispatch(getAllRooms(currentChannel.uid) as any);
 
             SocketIO.on("connect", () => console.log(SocketIO.id));
             SocketIO.on("disconnect", () => console.log("server disconnected"));
@@ -110,20 +132,31 @@ export const HomePageRooms: React.FC = () => {
                 onRequestSubmit={() => handleSubmit()}
                 isFullWidth={false}
                 primaryButtonDisabled={isDataValid ? false : true}
-                size="xs"
+                size="md"
             >
+                <InlineNotification
+                    aria-label="closes notification"
+                    // onClose={function noRefCheck() {}}
+                    // onCloseButtonClick={function noRefCheck() {}}
+                    statusIconDescription="notification"
+                    subtitle="Subtitle text goes here"
+                    title="Error:"
+                    kind="error"
+                />
                 <div className="w-full grid grid-cols-1 gap-4">
                     <TextInput
                         id=""
                         data-name="room_name"
                         labelText="Name"
-                        onChange={() => handleValidation()}
+                        onChange={() => getAllInputValue({ enableValidation: true })}
+                        spellCheck={false}
                     />
                     <TextInput
                         id=""
                         data-name="room_description"
                         labelText="Description"
-                        onChange={() => handleValidation()}
+                        onChange={() => getAllInputValue({ enableValidation: true })}
+                        spellCheck={false}
                     />
                     <FileUploader
                         labelTitle="Upload files"
@@ -135,7 +168,7 @@ export const HomePageRooms: React.FC = () => {
                         multiple={false}
                         iconDescription="Delete file"
                         data-name="room_logo"
-                        onChange={() => handleValidation()}
+                        onChange={() => getAllInputValue({ enableValidation: true })}
                     />
                 </div>
             </Modal>
@@ -150,15 +183,6 @@ export const HomePageRooms: React.FC = () => {
                     </p>
                 </div>
                 <div>
-                    {/* <ModalWrapper
-                        triggerButtonKind="secondary"
-                        buttonTriggerText="Add Room"
-                        modalHeading="Add Room"
-                        renderTriggerButtonIcon={Add}
-                        handleSubmit={() => {}}
-                    >
-                        <p>Modal content here</p>
-                    </ModalWrapper> */}
                     <IconButton
                         className="w-10 h-10 flex items-center justify-center p-0"
                         align="left"
@@ -182,8 +206,6 @@ export const HomePageRooms: React.FC = () => {
                     <h6 className="font-light opacity-30">No Rooms.</h6>
                 </div>
             )}
-
-            {/* <RoomBox /> */}
         </>
     );
 };

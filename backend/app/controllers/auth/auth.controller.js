@@ -131,7 +131,7 @@ exports.login = async (req, res) => {
                 })
                 .then(() => {
                     delete data.password;
-                    data.avatar_img = `${req.headers.host}/assets/${data.avatar_img}`;
+                    data.avatar_img = data.avatar_img;
                     res.status(200).send(
                         responseTemplate("success", {
                             ...data,

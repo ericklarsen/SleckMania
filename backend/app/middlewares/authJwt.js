@@ -24,7 +24,6 @@ verifyToken = async (req, res, next) => {
             db("users_token")
                 .where({ user_uid: decoded.user_uid, token })
                 .then(async (data) => {
-                    console.log(token);
                     if (!data.length) {
                         return res.status(200).send({
                             status: 0,
@@ -41,6 +40,8 @@ verifyToken = async (req, res, next) => {
                     req.permission_state = userDetails?.permission_state;
                     req.company_uid = companyDetails?.company_uid;
                     req.company_permission_state = companyDetails?.permission_state;
+                    // console.log(req.user_uid);
+
                     next();
                 });
         } catch (err) {

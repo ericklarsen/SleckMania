@@ -1,0 +1,52 @@
+.boxChannels {
+    @apply w-full px-4 py-2 bg-[#000000] flex items-center gap-4 cursor-pointer;
+}
+
+.boxChannels *,
+.boxChannels__roomsContainer * {
+    @apply select-none;
+}
+
+.boxChannels__dropdown {
+    transform: scaleY(1);
+}
+
+.boxChannels__dropdown.active {
+    transform: scaleY(-1);
+}
+
+.boxChannels__ava {
+    @apply w-8 h-8 rounded-full bg-gray-600;
+}
+
+.boxChannels__ava img {
+    @apply w-full h-full object-cover rounded-full;
+}
+
+.boxChannels__text {
+    @apply flex-1;
+}
+
+.boxChannels__roomsContainer {
+    @apply w-full bg-[#40404050] hidden;
+}
+
+.boxChannels__roomsContainer.active {
+    @apply block;
+}
+
+.boxChannels__room {
+    @apply p-4 py-2.5 pl-12 cursor-pointer transition  flex gap-2 items-center justify-between;
+}
+
+.boxChannels__room svg {
+    @apply opacity-0 pointer-events-none transition;
+}
+
+.boxChannels__room:hover {
+    @apply bg-[#404040];
+}
+
+.boxChannels__room:hover svg {
+    @apply opacity-100 pointer-events-auto;
+}
