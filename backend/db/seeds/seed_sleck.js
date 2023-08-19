@@ -112,12 +112,12 @@ exports.seed = async function (knex) {
         {
             company_uid: 2,
             user_uid: 2,
-            permission_state: 2, // normal member
+            permission_state: 2, // admin member
         },
         {
             company_uid: 2,
             user_uid: 3,
-            permission_state: 3, // normal member
+            permission_state: 1, // normal member
         },
         {
             company_uid: 1,

@@ -9,7 +9,7 @@ exports.getAllChannel = async (req, res) => {
     db.select(
         "channels.*",
         db.raw(
-            "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('room_uid', channel_rooms.room_uid, 'room_name', rooms.room_name)::jsonb), '[]') ELSE '[]' END AS rooms"
+            "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('uid', channel_rooms.room_uid, 'room_name', rooms.room_name, 'room_description', rooms.room_description,'room_logo', rooms.room_logo, 'created_at', rooms.created_at, 'updated_at', rooms.updated_at)::jsonb), '[]') ELSE '[]' END AS rooms"
         ),
         db.raw(
             "CASE WHEN COUNT(channel_members.user_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('user_uid', channel_members.user_uid, 'first_name', users.first_name, 'last_name', users.last_name)::jsonb), '[]') ELSE '[]' END AS members"
@@ -46,7 +46,7 @@ exports.getMyChannel = async (req, res) => {
     db.select(
         "channels.*",
         db.raw(
-            "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('room_uid', channel_rooms.room_uid, 'room_name', rooms.room_name)::jsonb), '[]') ELSE '[]' END AS rooms"
+            "CASE WHEN COUNT(channel_rooms.room_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('uid', channel_rooms.room_uid, 'room_name', rooms.room_name, 'room_description', rooms.room_description,'room_logo', rooms.room_logo, 'created_at', rooms.created_at, 'updated_at', rooms.updated_at)::jsonb), '[]') ELSE '[]' END AS rooms"
         )
         // db.raw(
         //     "CASE WHEN COUNT(channel_members.user_uid) > 0 THEN COALESCE(json_agg(DISTINCT json_build_object('user_uid', channel_members.user_uid, 'first_name', users.first_name, 'last_name', users.last_name)::jsonb), '[]') ELSE '[]' END AS members"
@@ -225,17 +225,19 @@ exports.getMembers = (req, res) => {
 
     db("channel_members")
         .join("users", "channel_members.user_uid", "users.uid")
+        .leftJoin("users_avatar", "users_avatar.user_uid", "users.uid")
         .where("channel_members.channel_uid", channel_uid)
-        .select("users.uid", "users.first_name", "users.last_name")
+        .select(
+            "users.uid",
+            "users.username",
+            "users.email",
+            "users.first_name",
+            "users.last_name",
+            "users_avatar.filename as avatar_img"
+        )
         .orderBy("users.first_name", "asc")
         .then((data) => {
-            const newData = data.map((item) => {
-                return {
-                    uid: item.uid,
-                    fullname: `${item.first_name} ${item.last_name}`,
-                };
-            });
-            res.status(200).send(responseTemplate("success", newData));
+            res.status(200).send(responseTemplate("success", data));
         })
         .catch((err) => {
             res.status(200).send(responseTemplate("error", err.detail));

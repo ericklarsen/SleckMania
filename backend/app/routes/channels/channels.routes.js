@@ -5,6 +5,7 @@ const imageUpload = require("../../middlewares/imageUpload");
 const {
     verifyMyCompanyChannelAndDoIHaveTheAccess,
     verifyMyChannelAndDoIHaveTheAccessAsAdmin,
+    verifyMyCompanyChannelAndCanIJoin,
 } = require("../../utilities");
 
 module.exports = function (app) {
@@ -22,7 +23,7 @@ module.exports = function (app) {
     );
     app.post(
         "/api/channels/join",
-        [authJwt.verifyToken, verifyMyCompanyChannelAndDoIHaveTheAccess],
+        [authJwt.verifyToken, verifyMyCompanyChannelAndCanIJoin],
         controller.join
     );
     app.post(

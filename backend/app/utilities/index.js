@@ -27,6 +27,31 @@ const verifyMyCompanyChannelAndDoIHaveTheAccess = async (req, res, next) => {
         });
 };
 
+const verifyMyCompanyChannelAndCanIJoin = async (req, res, next) => {
+    const { channel_uid } = req.body;
+    const { company_uid } = req;
+
+    db.select("channel_members.*")
+        .from("channels")
+        .leftJoin("company_channels", "company_channels.channel_uid", "channels.uid")
+        .leftJoin("channel_members", "channel_members.channel_uid", "channels.uid")
+        .where("company_channels.company_uid", company_uid)
+        .andWhere("channels.uid", channel_uid)
+        .then((data) => {
+            if (!data.length) {
+                return res
+                    .status(200)
+                    .send(responseTemplate("error", "You can't join to this channel."));
+            }
+
+            next();
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(200).send(responseTemplate("error", err.detail));
+        });
+};
+
 const verifyMyCompanyRoomAndDoIHaveTheAccess = async (req, res, next) => {
     const { uid } = req.body;
     const { user_uid, company_uid } = req;
@@ -208,6 +233,7 @@ const verifyMyChannelAndDoIHaveTheAccessAsAdmin = async (req, res, next) => {
 };
 
 const utilities = {
+    verifyMyCompanyChannelAndCanIJoin,
     verifyMyCompanyChannelAndDoIHaveTheAccess,
     verifyMyCompanyRoomAndDoIHaveTheAccess,
     verifyMyThreadAndDoIHaveTheAccess,

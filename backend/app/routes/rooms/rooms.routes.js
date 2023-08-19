@@ -13,6 +13,7 @@ module.exports = function (app) {
     });
 
     app.post("/api/rooms/get", [authJwt.verifyToken], controller.get);
+    app.post("/api/rooms/getDetails", [authJwt.verifyToken], controller.getDetails);
     app.post(
         "/api/rooms/add",
         [

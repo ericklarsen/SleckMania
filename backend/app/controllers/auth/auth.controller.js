@@ -91,10 +91,18 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const { username, password } = req.body;
 
-    db.select("users.*", "users_avatar.filename as avatar_img")
+    db.select(
+        "users.*",
+        "users_avatar.filename as avatar_img",
+        db.raw(
+            "json_build_object('company_uid',companies.uid, 'company_name',companies.company_name, 'company_logo',companies.company_logo, 'permission_state',company_members.permission_state) as company"
+        )
+    )
         .from("users")
         .leftJoin("users_avatar", "users.uid", "users_avatar.user_uid")
-        .where({ username })
+        .leftJoin("company_members", "users.uid", "company_members.user_uid")
+        .leftJoin("companies", "companies.uid", "company_members.company_uid")
+        .where("users.username", username)
         .first()
         .then(async (data) => {
             if (!data) {

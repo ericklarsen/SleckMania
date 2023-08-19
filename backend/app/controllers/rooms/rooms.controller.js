@@ -25,6 +25,25 @@ exports.get = async (req, res) => {
         });
 };
 
+exports.getDetails = async (req, res) => {
+    const { uid } = req.body;
+    const requiredFields = ["uid"];
+    if (!validatorForRequest(res, req, requiredFields)) {
+        return;
+    }
+
+    db.select("rooms.*")
+        .from("rooms")
+        .where("rooms.uid", uid)
+        .first()
+        .then((data) => {
+            res.status(200).send(responseTemplate("success", data === undefined ? {} : data));
+        })
+        .catch((err) => {
+            res.status(200).send(responseTemplate("error", err.detail));
+        });
+};
+
 exports.add = async (req, res) => {
     const { channel_uid, room_name, room_description } = req.body;
     const requiredFields = ["channel_uid", "room_name", "room_description"];
