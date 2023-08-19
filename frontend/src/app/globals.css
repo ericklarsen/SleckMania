@@ -4,11 +4,11 @@
 
 .global__side-1 {
     /* px-4 py-7 */
-    @apply w-[380px] h-screen bg-[#1E1E1E] flex flex-col;
+    @apply w-[380px] h-screen bg-secondary flex flex-col;
 }
 
 .global__side-2 {
-    @apply flex-1 h-full bg-[#121212] relative;
+    @apply flex-1 h-full bg-primary relative;
 }
 
 .global__side-1_topSect {

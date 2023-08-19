@@ -1,5 +1,5 @@
 .boxChannels {
-    @apply w-full px-4 py-2 bg-[#000000] flex items-center gap-4 cursor-pointer;
+    @apply w-full px-4 py-2 bg-[#000000] flex items-center gap-4 cursor-pointer relative;
 }
 
 .boxChannels *,

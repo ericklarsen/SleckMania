@@ -9,6 +9,9 @@
 @import "@carbon/type/scss/font-family";
 
 :root {
+    --primaryColor: #121212;
+    --secondaryColor: #1e1e1e;
+    --tertiaryColor: #333333;
     @include theme.theme();
 }
 

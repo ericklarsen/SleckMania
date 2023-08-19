@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiRequest } from "@/services/apiRequest";
 import { RootState } from "../../store";
+import { RoomObj } from "../rooms/getAll";
 
 // here we are typing the types for the state
 type InitialState = {
@@ -8,11 +9,6 @@ type InitialState = {
     loading: boolean;
     error: boolean;
     errorMsg: string;
-};
-
-type ChannelRooms = {
-    room_uid?: number;
-    room_name?: string;
 };
 
 export type ChannelsObj = {
@@ -23,7 +19,7 @@ export type ChannelsObj = {
     join?: boolean;
     created_at?: string;
     updated_at?: string;
-    rooms?: ChannelRooms[];
+    rooms?: RoomObj[];
 };
 
 const initialState: InitialState = {

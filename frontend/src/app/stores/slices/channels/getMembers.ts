@@ -4,8 +4,17 @@ import { RootState } from "../../store";
 import { ChannelsObj } from "./getAll";
 
 // here we are typing the types for the state
+type ChannelMembersObj = {
+    uid: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    avatar_img: string;
+};
+
 type InitialState = {
-    data: ChannelsObj[];
+    data: ChannelMembersObj[];
     loading: boolean;
     error: boolean;
     errorMsg: string;
@@ -19,13 +28,20 @@ const initialState: InitialState = {
 };
 
 // This action is what we will call using the dispatch in order to trigger the API call.
-export const getMyChannels = createAsyncThunk("channels/getMy", async () => {
-    const response = await apiRequest({ method: "GET", url: "channels/getMyChannel" });
-    return response.data.data;
-});
+export const getChannelMembers = createAsyncThunk(
+    "channels/getMembers",
+    async (channel_uid: number) => {
+        const response = await apiRequest({
+            method: "POST",
+            data: { channel_uid },
+            url: "channels/getMembers",
+        });
+        return response.data.data;
+    }
+);
 
-export const myChannelsSlice = createSlice({
-    name: "myChannels",
+export const channelMembersSlice = createSlice({
+    name: "channelMembers",
     initialState,
     reducers: {
         // leave this empty here
@@ -35,21 +51,21 @@ export const myChannelsSlice = createSlice({
     // Doing this is good practice as we can tap into the status of the API call and give our users an idea of what's happening in the background.
     extraReducers: (builder) => {
         builder
-            .addCase(getMyChannels.pending, (state) => {
+            .addCase(getChannelMembers.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getMyChannels.fulfilled, (state, { payload }) => {
+            .addCase(getChannelMembers.fulfilled, (state, { payload }) => {
                 // When the API call is successful and we get some data,the data becomes the `fulfilled` action payload
                 state.loading = false;
                 state.data = payload;
             })
-            .addCase(getMyChannels.rejected, (state) => {
+            .addCase(getChannelMembers.rejected, (state) => {
                 state.loading = false;
                 state.error = true;
             });
     },
 });
 
-export const selectMyChannels = (state: RootState) => state.myChannels;
+export const selectChannelMembers = (state: RootState) => state.channelMembers;
 
-export default myChannelsSlice.reducer;
+export default channelMembersSlice.reducer;

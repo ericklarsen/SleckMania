@@ -10,4 +10,10 @@ export type UserDetailsType = {
     updated_at: string;
     avatar_img: string;
     token: string;
+    company: {
+        company_logo: string;
+        company_name: string;
+        company_uid: number;
+        permission_state: number;
+    };
 };

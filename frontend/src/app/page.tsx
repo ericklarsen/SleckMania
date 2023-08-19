@@ -34,6 +34,8 @@ export default function Home() {
             .then((res) => {
                 if (res.data.status === 1) {
                     localStorage.setItem("appUser", JSON.stringify(res.data.data));
+                    window.location.href = "/";
+                    return;
                     setIsUser(true);
                     console.log(res.data.data);
                 } else {

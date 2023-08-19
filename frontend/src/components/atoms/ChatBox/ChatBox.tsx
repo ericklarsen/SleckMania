@@ -15,7 +15,7 @@ export const ChatBox: React.FC<Props> = ({ data }) => {
             <div className="w-fit ">
                 <h6 className="chatBox__name">{`${data.owner.first_name} ${data.owner.last_name}`}</h6>
                 <div className="chatBox__message">
-                    <p>{data.message_content}</p>
+                    <p className="whitespace-pre-wrap">{data.message_content}</p>
                     <h6 className="chatBox__message_date">
                         {moment(data.created_at).format("hh:mm")}
                     </h6>

@@ -32,7 +32,7 @@ export const HomePageRooms: React.FC = () => {
     const dispatch = useDispatch();
     const { currentChannel } = useSelector(selectGlobals);
     const { data, loading } = useSelector(selectRooms);
-    const [isModalOpen, setIsModalOpen] = useState(false as boolean);
+    const [isModalAddFormOpen, setIsModalAddFormOpen] = useState(false as boolean);
     const [isDataValid, setIsDataValid] = useState(false as boolean);
 
     const getAllInputValue = ({ callback, enableValidation }: ParamGetAllInputValueFunc) => {
@@ -94,7 +94,7 @@ export const HomePageRooms: React.FC = () => {
             .then((res) => {
                 if (!res.status) return;
                 console.log(res);
-                setIsModalOpen(false);
+                setIsModalAddFormOpen(false);
                 dispatch(getAllRooms(currentChannel.uid) as any);
             })
             .catch((err) => {
@@ -127,8 +127,8 @@ export const HomePageRooms: React.FC = () => {
                 modalLabel="Add"
                 primaryButtonText="Submit"
                 secondaryButtonText="Cancel"
-                open={isModalOpen}
-                onRequestClose={() => setIsModalOpen(false)}
+                open={isModalAddFormOpen}
+                onRequestClose={() => setIsModalAddFormOpen(false)}
                 onRequestSubmit={() => handleSubmit()}
                 isFullWidth={false}
                 primaryButtonDisabled={isDataValid ? false : true}
@@ -188,7 +188,7 @@ export const HomePageRooms: React.FC = () => {
                         align="left"
                         label="Add a Room"
                         kind="secondary"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => setIsModalAddFormOpen(true)}
                     >
                         <Add />
                     </IconButton>
