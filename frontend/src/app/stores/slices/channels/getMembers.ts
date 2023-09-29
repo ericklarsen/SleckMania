@@ -30,12 +30,15 @@ const initialState: InitialState = {
 // This action is what we will call using the dispatch in order to trigger the API call.
 export const getChannelMembers = createAsyncThunk(
     "channels/getMembers",
-    async (channel_uid: number) => {
+    async (channel_uid: number, { rejectWithValue }) => {
         const response = await apiRequest({
             method: "POST",
             data: { channel_uid },
             url: "channels/getMembers",
         });
+        if (!response.data.status) {
+            return rejectWithValue(response.data.data);
+        }
         return response.data.data;
     }
 );

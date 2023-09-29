@@ -18,10 +18,10 @@ exports.updateAvatar = async (req, res) => {
             .webp({ quality: 90 })
             .toFile(`${path.resolve()}/assets/users/${filename}`);
 
-        db("users_avatar")
+        db("users")
             .where({ user_uid: req.user_uid })
             .update({
-                filename,
+                avatar_img: filename,
             })
             .then((data) => {
                 res.status(200).send(responseTemplate("success", data));
@@ -88,20 +88,16 @@ exports.updateDetails = async (req, res) => {
 exports.getDetails = async (req, res) => {
     db.select(
         "users.*",
-        "users_avatar.filename as avatar_img",
         db.raw(
             "json_build_object('company_uid',companies.uid, 'company_name',companies.company_name, 'company_logo',companies.company_logo, 'permission_state',company_members.permission_state) as company"
         )
     )
         .from("users")
-        .leftJoin("users_avatar", "users.uid", "users_avatar.user_uid")
         .leftJoin("company_members", "users.uid", "company_members.user_uid")
         .leftJoin("companies", "companies.uid", "company_members.company_uid")
         .where("users.uid", req.user_uid)
         .first()
         .then((data) => {
-            // console.log(req.headers);
-            data.avatar_img = `${req.headers.host}/assets/${data.avatar_img}`;
             delete data.password;
             res.status(200).send(responseTemplate("success", data));
         })

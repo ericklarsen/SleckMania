@@ -16,6 +16,9 @@ module.exports = function (userDetails, io, socket) {
             .where("room_messages.room_uid", room_uid)
             .then((messages) => {
                 if (callback) callback(messages);
+            })
+            .catch((err) => {
+                console.log(err.detail);
             });
     };
 
@@ -35,7 +38,13 @@ module.exports = function (userDetails, io, socket) {
                     })
                     .then(() => {
                         if (callback) callback();
+                    })
+                    .catch((err) => {
+                        console.log(err.detail);
                     });
+            })
+            .catch((err) => {
+                console.log(err.detail);
             });
     };
 

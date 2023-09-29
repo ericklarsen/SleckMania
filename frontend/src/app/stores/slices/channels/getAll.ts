@@ -30,10 +30,16 @@ const initialState: InitialState = {
 };
 
 // This action is what we will call using the dispatch in order to trigger the API call.
-export const getAllChannels = createAsyncThunk("channels/getAll", async () => {
-    const response = await apiRequest({ method: "GET", url: "channels/getAllChannel" });
-    return response.data.data;
-});
+export const getAllChannels = createAsyncThunk(
+    "channels/getAll",
+    async (_data, { rejectWithValue }) => {
+        const response = await apiRequest({ method: "GET", url: "channels/getAllChannel" });
+        if (!response.data.status) {
+            return rejectWithValue(response.data.data);
+        }
+        return response.data.data;
+    }
+);
 
 export const channelsSlice = createSlice({
     name: "channels",

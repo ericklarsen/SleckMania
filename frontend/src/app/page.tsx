@@ -50,7 +50,8 @@ export default function Home() {
     if (isLoading) return;
 
     if (isUser) {
-        return <HomePage />;
+        window.location.href = "/app/home";
+        return <div></div>;
     }
 
     return (

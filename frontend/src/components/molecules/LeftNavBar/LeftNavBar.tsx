@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/app/stores/hooks";
 import { setCurrentChannel, setCurrentRoom } from "@/app/stores/slices/globals/globals";
 import { useDispatch } from "react-redux";
+import Link from "next/link";
 
 export const LeftNavBar = () => {
     const dispatch = useAppDispatch();
@@ -25,14 +26,13 @@ export const LeftNavBar = () => {
 
     useEffect(() => {
         setAppUser(JSON.parse(localStorage.getItem("appUser") as any));
-        setCurrentPath(window.location.pathname.split("/")[1] as any);
-
-        console.log(window.location.pathname.split("/"));
+        setCurrentPath(window.location.pathname.split("/")[2] as any);
     }, []);
 
     const handleNavigation = (param: string) => {
         setCurrentPath(param);
         router.push("/" + param);
+        setCurrentPath(param.split("/")[1] as any);
 
         // if (param !== "channels") {
         //     dispatch(setCurrentChannel({ uid: 0 }));
@@ -47,16 +47,16 @@ export const LeftNavBar = () => {
                 name={appUser?.hasOwnProperty("first_name") ? appUser.first_name[0] : ""}
             />
             <Chat
-                className={`leftNavBar__icon ${currentPath === "" && "active"}`}
-                onClick={() => handleNavigation("")}
+                className={`leftNavBar__icon ${currentPath === "home" && "active"}`}
+                onClick={() => handleNavigation("app/home")}
             />
             <GroupAccess
                 className={`leftNavBar__icon ${currentPath === "channels" && "active"}`}
-                onClick={() => handleNavigation("channels")}
+                onClick={() => handleNavigation("app/channels")}
             />
             <Calendar
                 className={`leftNavBar__icon ${currentPath === "calendar" && "active"}`}
-                onClick={() => handleNavigation("")}
+                onClick={() => handleNavigation("app/home")}
             />
             <UserMultiple className={`leftNavBar__icon`} />
 

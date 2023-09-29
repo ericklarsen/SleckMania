@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiRequest } from "@/services/apiRequest";
 import { RootState } from "../../store";
 import { ChannelsObj } from "./getAll";
+import { setErrorMsg } from "../globals/globals";
 
 // here we are typing the types for the state
 type InitialState = {
@@ -19,10 +20,17 @@ const initialState: InitialState = {
 };
 
 // This action is what we will call using the dispatch in order to trigger the API call.
-export const getMyChannels = createAsyncThunk("channels/getMy", async () => {
-    const response = await apiRequest({ method: "GET", url: "channels/getMyChannel" });
-    return response.data.data;
-});
+export const getMyChannels = createAsyncThunk(
+    "channels/getMy",
+    async (_data, { rejectWithValue, dispatch }) => {
+        const response = await apiRequest({ method: "GET", url: "channels/getMyChannel" });
+        if (!response.data.status) {
+            dispatch(setErrorMsg(response.data.data));
+            return rejectWithValue(response.data.data);
+        }
+        return response.data.data;
+    }
+);
 
 export const myChannelsSlice = createSlice({
     name: "myChannels",
@@ -43,9 +51,10 @@ export const myChannelsSlice = createSlice({
                 state.loading = false;
                 state.data = payload;
             })
-            .addCase(getMyChannels.rejected, (state) => {
+            .addCase(getMyChannels.rejected, (state, { payload }) => {
                 state.loading = false;
                 state.error = true;
+                state.errorMsg = payload as string;
             });
     },
 });

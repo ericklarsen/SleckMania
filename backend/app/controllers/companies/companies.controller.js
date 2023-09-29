@@ -123,12 +123,11 @@ exports.getAllMembers = async (req, res) => {
         "users.first_name",
         "users.last_name",
         "users.email",
-        "users_avatar.filename as avatar_img",
+        "users.avatar_img",
         "company_members.permission_state"
     )
         .from("company_members")
         .leftJoin("users", "users.uid", "company_members.user_uid")
-        .leftJoin("users_avatar", "users.uid", "users_avatar.user_uid")
         .then((data) => {
             res.status(200).send(responseTemplate("success", data));
         })

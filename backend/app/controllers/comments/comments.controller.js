@@ -12,13 +12,12 @@ exports.get = async (req, res) => {
     db.select(
         "comments.*",
         db.raw(
-            "json_build_object('user_uid', users.uid, 'first_name',users.first_name, 'last_name',users.last_name, 'avatar_img', users_avatar.filename) as owner"
+            "json_build_object('user_uid', users.uid, 'first_name',users.first_name, 'last_name',users.last_name, 'avatar_img', users.avatar_img) as owner"
         )
     )
         .from("comments")
         .leftJoin("thread_comments", "thread_comments.comment_uid", "comments.uid")
         .leftJoin("users", "users.uid", "comments.user_uid")
-        .leftJoin("users_avatar", "users_avatar.user_uid", "users.uid")
         .orderBy("comments.uid", "asc")
         .where("thread_comments.thread_uid", thread_uid)
         .then((data) => {

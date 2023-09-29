@@ -12,7 +12,7 @@ exports.get = async (req, res) => {
     db.select(
         "threads.*",
         db.raw(
-            "json_build_object('user_uid', users.uid,'first_name', users.first_name,'last_name', users.last_name, 'avatar_img', users_avatar.filename) as owner"
+            "json_build_object('user_uid', users.uid,'first_name', users.first_name,'last_name', users.last_name, 'avatar_img', users.avatar_img) as owner"
         )
         // "users.uid as user_uid",
         // "users.first_name",
@@ -23,12 +23,11 @@ exports.get = async (req, res) => {
     )
         .from("threads")
         .leftJoin("users", "threads.user_uid", "users.uid")
-        .leftJoin("users_avatar", "users_avatar.user_uid", "users.uid")
         // .leftJoin("thread_comments", "threads.uid", "thread_comments.thread_uid")
         // .leftJoin("comments", "thread_comments.comment_uid", "comments.uid")
         .leftJoin("channel_threads", "channel_threads.thread_uid", "threads.uid")
         .orderBy("threads.uid", "asc")
-        .groupBy("threads.uid", "users.uid", "users_avatar.filename")
+        .groupBy("threads.uid", "users.uid")
         .where("channel_threads.channel_uid", channel_uid)
         .then((data) => {
             res.status(200).send(responseTemplate("success", data));

@@ -12,9 +12,9 @@
 }
 
 .global__side-1_topSect {
-    @apply w-full flex items-center justify-between px-4 pt-7 pb-4 flex-[0_auto];
+    @apply w-full flex items-center justify-between px-4 pt-7 flex-[0_auto] relative;
 }
 
 .global__side-1_bottomSect {
-    @apply w-full max-h-full overflow-y-auto overflow-x-hidden flex-[1_auto];
+    @apply w-full max-h-full overflow-y-auto overflow-x-hidden pt-7 flex-[1_auto] relative z-10;
 }

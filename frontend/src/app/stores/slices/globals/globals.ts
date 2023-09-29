@@ -10,9 +10,11 @@ type InitialState = {
     isModalAddFormOpen: boolean;
     modalAddFormData: { channel_uid: number };
     modalAddFormEditData: RoomObj;
+    errorMsg: string;
 };
 
 const initialState: InitialState = {
+    errorMsg: "",
     currentChannel: { uid: 0 },
     currentRoom: { uid: 0 },
     isSendMessage: false,
@@ -26,6 +28,9 @@ export const globalsSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
+        setErrorMsg: (state, action) => {
+            state.errorMsg = action.payload;
+        },
         setCurrentChannel: (state, action) => {
             state.currentChannel = action.payload;
         },
@@ -51,6 +56,7 @@ export const globalsSlice = createSlice({
 });
 
 export const {
+    setErrorMsg,
     setCurrentChannel,
     setCurrentRoom,
     setIsSendMessage,

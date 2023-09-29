@@ -41,51 +41,55 @@ exports.register = async (req, res) => {
         .toFile(`${path.resolve()}/assets/companies/${fileName}`);
 
     console.log(resize);
-
+    console.log(req.body);
     try {
-        db("users")
-            .insert({
-                username,
-                password: passwordHas,
-                email,
-                first_name,
-                last_name,
-                phone,
-                permission_state: 0,
-            })
-            .returning("uid")
-            .then((userData) => {
-                db("users_avatar")
-                    .insert({
-                        user_uid: userData[0].uid,
-                        filename: "",
-                    })
-                    .then(() => {
-                        db("companies")
-                            .insert({
-                                company_name,
-                                company_logo: fileName,
-                            })
-                            .returning("uid")
-                            .then((companyData) => {
-                                db("company_members")
-                                    .insert({
-                                        company_uid: companyData[0].uid,
-                                        user_uid: userData[0].uid,
-                                        permission_state: 3, // super member
-                                    })
-                                    .returning("uid")
-                                    .then(() => {
-                                        res.status(200).send(
-                                            responseTemplate("success", "Success")
-                                        );
-                                    });
-                            });
-                    });
-            });
     } catch (err) {
         res.status(200).send(responseTemplate("error", err.detail));
     }
+
+    db("users")
+        .insert({
+            username,
+            password: passwordHas,
+            email,
+            first_name,
+            last_name,
+            phone,
+            avatar_img: "",
+            permission_state: 0,
+        })
+        .returning("uid")
+        .then((userData) => {
+            db("companies")
+                .insert({
+                    company_name,
+                    company_logo: fileName,
+                })
+                .returning("uid")
+                .then((companyData) => {
+                    db("company_members")
+                        .insert({
+                            company_uid: companyData[0].uid,
+                            user_uid: userData[0].uid,
+                            permission_state: 3, // super member
+                        })
+                        .returning("uid")
+                        .then(() => {
+                            res.status(200).send(responseTemplate("success", "Success"));
+                        })
+                        .catch((err) => {
+                            res.status(200).send(
+                                responseTemplate("error", `Company Members: ${err.detail}`)
+                            );
+                        });
+                })
+                .catch((err) => {
+                    res.status(200).send(responseTemplate("error", `Company : ${err.detail}`));
+                });
+        })
+        .catch((err) => {
+            res.status(200).send(responseTemplate("error", `Add User ${err.detail}`));
+        });
 };
 
 exports.login = async (req, res) => {
@@ -93,13 +97,11 @@ exports.login = async (req, res) => {
 
     db.select(
         "users.*",
-        "users_avatar.filename as avatar_img",
         db.raw(
             "json_build_object('company_uid',companies.uid, 'company_name',companies.company_name, 'company_logo',companies.company_logo, 'permission_state',company_members.permission_state) as company"
         )
     )
         .from("users")
-        .leftJoin("users_avatar", "users.uid", "users_avatar.user_uid")
         .leftJoin("company_members", "users.uid", "company_members.user_uid")
         .leftJoin("companies", "companies.uid", "company_members.company_uid")
         .where("users.username", username)

@@ -59,7 +59,10 @@ export const BoxChannels: React.FC<Props> = ({ data }) => {
             <div className="boxChannels" onClick={() => handleChooseChannel()}>
                 <ChevronDown
                     className={`boxChannels__dropdown ${isDrop && "active"}`}
-                    onClick={() => setIsDrop(!isDrop)}
+                    onClick={(ev: React.MouseEvent<React.ReactSVGElement>) => {
+                        ev.stopPropagation();
+                        setIsDrop(!isDrop);
+                    }}
                 />
 
                 <div className="boxChannels__ava">

@@ -16,6 +16,7 @@ exports.seed = async function (knex) {
             first_name: "Erick",
             last_name: "Larsen",
             phone: "123123123",
+            avatar_img: "4ec7b5ee-4569-40ae-b2c2-4b009996ac96-1688158497053.webp",
             permission_state: 2,
         },
         {
@@ -26,6 +27,7 @@ exports.seed = async function (knex) {
             first_name: "Maiks",
             last_name: "larsen",
             phone: "123123123",
+            avatar_img: "4ec7b5ee-4569-40ae-b2c2-4b009996ac96-1688158497053.webp",
             permission_state: 1,
         },
         {
@@ -36,6 +38,7 @@ exports.seed = async function (knex) {
             first_name: "Maiks 2",
             last_name: "larsen",
             phone: "123123123",
+            avatar_img: "4ec7b5ee-4569-40ae-b2c2-4b009996ac96-1688158497053.webp",
             permission_state: 1,
         },
         {
@@ -46,31 +49,8 @@ exports.seed = async function (knex) {
             first_name: "Maiks 3",
             last_name: "larsen",
             phone: "123123123",
+            avatar_img: "4ec7b5ee-4569-40ae-b2c2-4b009996ac96-1688158497053.webp",
             permission_state: 1,
-        },
-    ]);
-
-    await knex("users_avatar").del();
-    await knex("users_avatar").insert([
-        {
-            uid: 1,
-            user_uid: 1,
-            filename: "4ec7b5ee-4569-40ae-b2c2-4b009996ac96-1688158497053.webp",
-        },
-        {
-            uid: 2,
-            user_uid: 2,
-            filename: "",
-        },
-        {
-            uid: 3,
-            user_uid: 3,
-            filename: "",
-        },
-        {
-            uid: 4,
-            user_uid: 4,
-            filename: "",
         },
     ]);
 

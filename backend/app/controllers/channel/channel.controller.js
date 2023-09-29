@@ -225,7 +225,6 @@ exports.getMembers = (req, res) => {
 
     db("channel_members")
         .join("users", "channel_members.user_uid", "users.uid")
-        .leftJoin("users_avatar", "users_avatar.user_uid", "users.uid")
         .where("channel_members.channel_uid", channel_uid)
         .select(
             "users.uid",
@@ -233,7 +232,7 @@ exports.getMembers = (req, res) => {
             "users.email",
             "users.first_name",
             "users.last_name",
-            "users_avatar.filename as avatar_img"
+            "users.avatar_img"
         )
         .orderBy("users.first_name", "asc")
         .then((data) => {
