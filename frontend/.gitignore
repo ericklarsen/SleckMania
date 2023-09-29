@@ -28,7 +28,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
+# .env*.local
 
 # vercel
 .vercel
@@ -37,11 +37,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
+# .env
 
 # next-pwa
 **/public/workbox-*.js
